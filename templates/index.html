@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseWatch</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <meta http-equiv="refresh" content="5">
+</head>
+
+<body>
+    <div class="container">
+        <header class="hero">
+            <div class="hero-left">
+                <h1>PulseWatch</h1>
+                <p class="subtitle">Advanced System Monitor Dashboard</p>
+                <p class="hero-desc">
+                    Live system insights for CPU, memory, disk, network usage, and top running processes.
+                </p>
+            </div>
+            <div class="hero-right">
+                <div class="badge">Live Monitoring</div>
+                <span class="timestamp">Last updated: {{ data.timestamp }}</span>
+            </div>
+        </header>
+
+        <section class="info-grid">
+            <div class="card">
+                <h2>Hostname</h2>
+                <p>{{ data.hostname }}</p>
+            </div>
+            <div class="card">
+                <h2>Platform</h2>
+                <p>{{ data.platform }}</p>
+            </div>
+            <div class="card">
+                <h2>CPU Usage</h2>
+                <p>{{ data.cpu_usage }}%</p>
+                <div class="bar">
+                    <div class="fill cpu" style="width: {{ data.cpu_usage }}%;"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Memory Usage</h2>
+                <p>{{ data.memory_used }} GB / {{ data.memory_total }} GB ({{ data.memory_percent }}%)</p>
+                <div class="bar">
+                    <div class="fill memory" style="width: {{ data.memory_percent }}%;"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Disk Usage</h2>
+                <p>{{ data.disk_used }} GB / {{ data.disk_total }} GB ({{ data.disk_percent }}%)</p>
+                <div class="bar">
+                    <div class="fill disk" style="width: {{ data.disk_percent }}%;"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Network I/O</h2>
+                <p>Sent: {{ data.bytes_sent }} MB<br>Received: {{ data.bytes_recv }} MB</p>
+            </div>
+        </section>
+
+        <section class="alerts-section">
+            <div class="section-header">
+                <h2>System Alerts</h2>
+            </div>
+            {% if data.alerts %}
+            <ul class="alerts">
+                {% for alert in data.alerts %}
+                <li>{{ alert }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="safe">No critical alerts detected.</p>
+            {% endif %}
+        </section>
+
+        <section class="process-section">
+            <div class="section-header">
+                <h2>Top Processes</h2>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PID</th>
+                            <th>Name</th>
+                            <th>CPU %</th>
+                            <th>Memory %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for proc in data.top_processes %}
+                        <tr>
+                            <td>{{ proc.pid }}</td>
+                            <td>{{ proc.name }}</td>
+                            <td>{{ proc.cpu_percent }}</td>
+                            <td>{{ "%.2f"|format(proc.memory_percent or 0) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</body>
+
+</html>
